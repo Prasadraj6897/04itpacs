@@ -1,0 +1,42 @@
+# base image
+FROM node:10.4.1-alpine as builder
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh
+# set working directory
+WORKDIR /usr/src/app
+# install app dependencies
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+COPY package.json /usr/src/app/package.json
+RUN npm install
+RUN npm install react-scripts@1.1.4 -g
+# set environment variables
+ARG REACT_APP_USERS_SERVICE_URL
+ENV REACT_APP_USERS_SERVICE_URL $REACT_APP_USERS_SERVICE_URL
+
+ARG REACT_APP_S3_BUCKET
+ENV REACT_APP_S3_BUCKET ${S3_BUCKET}
+ARG REACT_APP_S3_ACCESS_KEY
+ENV REACT_APP_S3_ACCESS_KEY ${S3_KEY}
+ARG REACT_APP_S3_SECRET_ACCESS_KEY
+ENV REACT_APP_S3_SECRET_ACCESS_KEY ${S3_SECRET_ACCESS_KEY}
+
+ARG NODE_ENV
+ENV NODE_ENV $NODE_ENV
+# create build
+COPY . /usr/src/app
+RUN npm run build
+#########
+# FINAL #
+#########
+# base image
+FROM nginx:1.15.0-alpine
+# new
+# update nginx conf
+RUN rm -rf /etc/nginx/conf.d
+COPY conf /etc/nginx
+# copy static files
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+# expose port
+EXPOSE 80
+# run nginx
+CMD ["nginx", "-g", "daemon off;"]

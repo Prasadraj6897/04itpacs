@@ -1,0 +1,131 @@
+version: '3.4'
+services:
+ users:
+  container_name: users
+  build:
+   context: ./services/users
+   dockerfile: Dockerfile-dev
+  ports:
+   - 5001:5000
+  command: gunicorn -b 0.0.0.0:5000 manage:app
+  links:
+   - redis
+   - users-db
+   - mongodb
+  volumes:
+    - './services/users:/usr/src/app'
+  environment:
+   - FLASK_DEBUG=1
+   - APP_SETTINGS=project.config_default.DevelopmentConfig
+   - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+   - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+   - SECRET_KEY=ITPACS2018
+   - MAIL_USERNAME=contact@itpacs.org
+   - MAIL_PASSWORD=Inurtura123
+   - DB_MONGO_URL=mongodb://mongodb:27017/itpacs01
+   - CELERY_BROKER=redis://redis:6379/0
+   - CELERY_BACKEND=redis://redis:6379/0
+   - C_FORCE_ROOT=true
+   - S3_BUCKET=${S3_BUCKET}
+   - S3_KEY=${S3_KEY}
+   - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+ celery:
+  container_name: celery
+  build:
+   context: ./services/users
+   dockerfile: Dockerfile-dev
+  command: celery -A project.tasks.celery worker --loglevel=debug 
+  environment:
+   - FLASK_DEBUG=1
+   - APP_SETTINGS=project.config_default.DevelopmentConfig
+   - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+   - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+   - SECRET_KEY=ITPACS2018
+   - MAIL_USERNAME=contact@itpacs.org
+   - MAIL_PASSWORD=Inurtura123
+   - DB_MONGO_URL=mongodb://mongodb:27017/itpacs01
+   - CELERY_BROKER=redis://redis:6379/0
+   - CELERY_BACKEND=redis://redis:6379/0
+   - C_FORCE_ROOT = true 
+   - CELERY_IMPORTS=tasks
+   - MONGODB_USERNAME=admin
+   - MONGODB_PASSWORD=Inurtura123
+  depends_on:
+   - users-db
+   - redis
+   - mongodb
+   - users   
+ mongodb:
+  container_name: "mongodb"
+  build:
+   context: ./services/mongo
+   dockerfile: Dockerfile-dev
+  environment:
+   - MONGO_INITDB_DATABASE=itpacs01
+   - MONGO_INITDB_ROOT_USERNAME=itpacs
+   - MONGO_INITDB_ROOT_PASSWORD=Inurtura123
+  volumes:
+   - ./services/mongo/data/db:/usr/data/db
+   - ./services/mongo/mongo-entrypoint:/docker-entrypoint-initdb.d    
+  ports:
+   - 27017:27017
+
+ users-db:
+   container_name: users-db
+   build:
+    context: ./services/users/project/db
+    dockerfile: Dockerfile
+   ports:
+    - 5435:5432
+   environment:
+   - POSTGRES_USER=postgres
+   - POSTGRES_PASSWORD=postgres
+
+ nginx:
+   container_name: nginx
+   build: 
+      context: ./services/nginx
+      dockerfile: Dockerfile-dev
+   restart: always
+   ports:
+   - 80:80
+   depends_on:
+   - users
+   - client
+
+ client:
+  container_name: client
+  build:
+   context: ./services/client2
+   dockerfile: Dockerfile-dev
+  volumes:
+   - './services/client2:/usr/src/app'
+   - '/usr/src/app/node_modules'
+  ports:
+   - '3001:3000'
+  environment:
+   - NODE_ENV=development
+   - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+   - REACT_APP_S3_BUCKET=${S3_BUCKET}
+   - REACT_APP_S3_ACCESS_KEY=${S3_KEY}
+   - REACT_APP_S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+  depends_on:
+   - users
+
+ redis:
+  image: redis:latest
+  container_name: redis
+
+ swagger:
+  container_name: swagger
+  build:
+    context: ./services/swagger
+    dockerfile: Dockerfile-dev
+  volumes:
+   - './services/swagger/swagger.json:/usr/share/nginx/html/swagger.json'  
+  ports:
+   - '3000:8080'
+  environment:
+   - URL=swagger.json
+  depends_on:
+   - users

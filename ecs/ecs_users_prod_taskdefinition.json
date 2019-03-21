@@ -1,0 +1,73 @@
+
+{
+"containerDefinitions": [
+{
+"name": "users",
+"image": "%s.dkr.ecr.us-west-1.amazonaws.com/test-driven-users:production",
+"essential": true,
+"memoryReservation": 150,
+"portMappings": [
+{
+"hostPort": 0,
+"protocol": "tcp",
+"containerPort": 5000
+}
+],
+"environment": [
+{
+"name": "APP_SETTINGS",
+"value": "project.config.ProductionConfig"
+},
+{
+"name": "DATABASE_TEST_URL",
+"value": "postgres://postgres:postgres@users-db2:5432/users_test"
+},
+{
+"name": "DATABASE_URL",
+"value": "%s"
+},
+{
+"name": "DB_MONGO_URL",
+"value": "mongodb://mongodb:27017/example1"
+ },
+{
+"name": "SECRET_KEY",
+"value": "%s"
+}
+],
+"links": [
+	"mongodb"
+],
+"logConfiguration": {
+"logDriver": "awslogs",
+"options": {
+"awslogs-group": "testdriven-users-production",
+"awslogs-region": "us-west-1"
+}
+}
+},
+
+{
+	"name": "mongodb",
+	"image": "679054166964.dkr.ecr.us-west-1.amazonaws.com/test-driven-mongo:production",
+	"essential": true,
+	"memoryReservation": 150,
+	"portMappings": [
+	{
+		"hostPort": 0,
+		"protocol": "tcp",
+		"containerPort": 27017
+	}
+	],
+"logConfiguration": {
+	"logDriver": "awslogs",
+	"options": {
+	"awslogs-group": "testdriven-mongo-production",
+	"awslogs-region": "us-west-1"
+			}
+		}
+	}
+
+],
+"family": "testdriven-users-prod-td"
+}

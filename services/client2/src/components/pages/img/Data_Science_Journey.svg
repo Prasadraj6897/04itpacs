@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1056.5 456.4" style="enable-background:new 0 0 1056.5 456.4;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;stroke:#4D7684;stroke-width:3;stroke-miterlimit:10;}
+	.st1{fill:#4D92F7;}
+	.st2{fill:#5F9AE0;}
+	.st3{fill:#59B9C1;}
+	.st4{fill:#249ABE;}
+	.st5{fill:#0FB5E7;}
+	.st6{fill:#FFFFFF;stroke:#FFFFFF;stroke-width:0.25;stroke-miterlimit:10;}
+	.st7{font-family:'GTWalsheimRegular';}
+	.st8{font-size:15.4px;}
+	.st9{fill:#4D7684;stroke:#4D7684;stroke-width:0.5;stroke-miterlimit:10;}
+	.st10{font-size:20px;}
+	.st11{fill:#4D7684;stroke:#4D7684;stroke-width:3;stroke-miterlimit:10;}
+	.st12{fill:#FFFFFF;stroke:#FFFFFF;stroke-width:0.5;stroke-miterlimit:10;}
+	.st13{font-size:28px;}
+	.st14{fill:#4D7684;}
+</style>
+<rect x="1.5" y="1.5" class="st0" width="1053.5" height="453.5"/>
+<rect x="156.9" y="351.9" class="st1" width="154" height="47.6"/>
+<rect x="310.9" y="304" class="st2" width="154" height="47.6"/>
+<rect x="618.4" y="189.4" class="st3" width="154" height="47.6"/>
+<rect x="771.9" y="141.5" class="st4" width="154" height="47.6"/>
+<rect x="464.9" y="236.5" class="st5" width="154" height="68"/>
+<text transform="matrix(1 0 0 1 173.3248 372.7033)"><tspan x="0" y="0" class="st6 st7 st8">PROGRAMMING</tspan><tspan x="17.9" y="18.5" class="st6 st7 st8">LANGUAGE</tspan></text>
+<text transform="matrix(1 0 0 1 306.886 433.2068)" class="st9 st7 st10">2</text>
+<text transform="matrix(1 0 0 1 430.6243 433.7068)" class="st9 st7 st10">4</text>
+<text transform="matrix(1 0 0 1 548.0778 432.2216)" class="st9 st7 st10"> 6</text>
+<text transform="matrix(1 0 0 1 674.3338 432.207)" class="st9 st7 st10">8</text>
+<text transform="matrix(1 0 0 1 794.9161 432.2217)" class="st9 st7 st10">10</text>
+<text transform="matrix(1 0 0 1 917.43 432.2217)" class="st9 st7 st10">12</text>
+<g>
+	<text transform="matrix(1 0 0 1 48.0207 394.86)" class="st9 st7 st10">NOVICE</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 14.0876 252.861)" class="st9 st7 st10">INTERMEDIATE</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 45.0093 132.03)" class="st9 st7 st10">EXPERT</text>
+</g>
+<g>
+	<line class="st11" x1="154.1" y1="400.5" x2="1002.1" y2="400.5"/>
+	<line class="st11" x1="155.6" y1="89" x2="155.6" y2="401"/>
+</g>
+<text transform="matrix(1 0 0 1 338.6527 322.1932)"><tspan x="0" y="0" class="st6 st7 st8">LIBRARIES</tspan><tspan x="0" y="18.5" class="st6 st7 st8">FRAMEWORKS</tspan></text>
+<text transform="matrix(1 0 0 1 473.6471 257.1965)"><tspan x="0" y="0" class="st6 st7 st8">DATA ACQUISITION</tspan><tspan x="0" y="18.5" class="st6 st7 st8">DATA ANALYSIS</tspan><tspan x="0" y="37" class="st6 st7 st8">DATA VISUALIZATION</tspan></text>
+<text transform="matrix(1 0 0 1 627.15 209.6893)"><tspan x="0" y="0" class="st6 st7 st8">MACHINE LEARNING</tspan><tspan x="0" y="18.5" class="st6 st7 st8">ALGORITHMS</tspan></text>
+<text transform="matrix(1 0 0 1 781.6426 161.1815)"><tspan x="0" y="0" class="st6 st7 st8">ARTIFICIAL NEURAL</tspan><tspan x="0" y="18.5" class="st6 st7 st8">NETWORKS</tspan></text>
+<g>
+	<rect x="312.6" y="17.7" class="st9" width="444.9" height="45.8"/>
+	<g>
+		<text transform="matrix(1 0 0 1 372.5631 50.5344)" class="st12 st7 st13">DATA SCIENCE JOURNEY</text>
+	</g>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 960.0731 432.8495)" class="st9 st7 st10">MONTHS</text>
+</g>
+<g>
+	<text transform="matrix(1 0 0 1 33.6976 90.3494)" class="st9 st7 st10">EXPERTISE</text>
+</g>
+<g>
+	<path class="st14" d="M996.9,407.9l8.4-6.4c0.7-0.5,0.7-1.3,0-1.8l-8.5-6.3c-0.7-0.5-1.7-0.5-2.4,0c-0.7,0.5-0.7,1.3,0,1.8l7.3,5.4
+		l-7.2,5.5c-0.7,0.5-0.7,1.3,0,1.8C995.1,408.5,996.2,408.4,996.9,407.9z"/>
+</g>
+<g>
+	<path class="st14" d="M148.3,94l6.4-8.4c0.5-0.7,1.3-0.7,1.8,0l6.3,8.5c0.5,0.7,0.5,1.7,0,2.4c-0.5,0.7-1.3,0.7-1.8,0l-5.4-7.3
+		l-5.5,7.2c-0.5,0.7-1.3,0.7-1.8,0S147.8,94.7,148.3,94z"/>
+</g>
+</svg>

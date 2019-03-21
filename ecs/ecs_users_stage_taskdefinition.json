@@ -1,0 +1,191 @@
+{
+"containerDefinitions": [
+{
+		"name": "users",
+		"image": "%s.dkr.ecr.ap-southeast-1.amazonaws.com/itpacs-users:staging",
+		"essential": true,
+		"memoryReservation": 200,
+		"portMappings": [
+							{
+							"hostPort": 0,
+							"protocol": "tcp",
+							"containerPort": 5000
+							}
+		],
+		"command":["gunicorn", "-b", "0.0.0.0:5000", "manage:app" ],
+		"environment": [
+							{
+								"name": "APP_SETTINGS",
+								"value": "project.config.ProductionConfig"
+							},
+							{
+								"name": "DATABASE_TEST_URL",
+								"value": "postgres://postgres:postgres@users-db:5432/users_test"
+							},
+							{
+								"name": "DATABASE_URL",
+								"value": "postgres://postgres:postgres@users-db:5432/users_stage"
+							},
+							{
+								"name": "DB_MONGO_URL",
+								"value": "mongodb://mongodb:27017/example1"
+							},
+							{
+								"name": "SECRET_KEY",
+								"value": "ITPACS_2018"
+							}
+							],
+		"links": [
+		"users-db", "mongodb", "redis"
+		],
+		"logConfiguration": {
+								"logDriver": "awslogs",
+								"options": {
+											"awslogs-group": "itpacs-users-stage-logs",
+											"awslogs-region": "ap-southeast-1"
+										}		
+							}
+},
+
+{
+	"name": "users-db",
+	"image": "%s.dkr.ecr.ap-southeast-1.amazonaws.com/itpacs-users_db:staging",
+	"essential": true,
+	"memoryReservation": 200,
+	"portMappings": [
+						{
+							"hostPort": 0,
+							"protocol": "tcp",
+							"containerPort": 5432
+						}
+					],
+	"environment": [
+			{
+				"name": "POSTGRES_PASSWORD",
+				"value": "postgres"
+			},
+			{
+				"name": "POSTGRES_USER",
+				"value": "postgres"
+			}
+		],
+	"logConfiguration": {
+		"logDriver": "awslogs",
+		"options": {
+					"awslogs-group": "itpacs-usersdb-stage-logs",
+					"awslogs-region": "ap-southeast-1"
+				}
+			}
+},
+{
+	"name": "mongodb",
+	"image": "%s.dkr.ecr.ap-southeast-1.amazonaws.com/itpacs-mongo:staging",
+	"essential": true,
+	"memoryReservation": 150,
+	"portMappings": [
+	{
+		"hostPort": 0,
+		"protocol": "tcp",
+		"containerPort": 27017
+	}
+	],
+	"environment": [
+        {
+          "name": "MONGO_DATA_DIR",
+          "value": "/usr/data/db"
+        },
+        {
+          "name": "MONGO_LOG_DIR",
+          "value": "/dev/null"
+        }
+      ],
+"logConfiguration": {
+	"logDriver": "awslogs",
+	"options": {
+	"awslogs-group": "itpacs-mongo-stage-logs",
+	"awslogs-region": "ap-southeast-1"
+			}
+		}
+	},
+{
+	"name": "redis",
+	"image": "redis:latest",
+	"essential": true,
+	"memoryReservation": 150,
+	"portMappings": [
+	{
+		"hostPort": 0,
+		"protocol": "tcp",
+		"containerPort": 6739
+	}
+	],
+
+"logConfiguration": {
+	"logDriver": "awslogs",
+	"options": {
+	"awslogs-group": "itpacs-users-stage-logs",
+	"awslogs-region": "ap-southeast-1"
+			}
+		}
+	},
+{
+	"name": "celery",
+	"image": "%s.dkr.ecr.ap-southeast-1.amazonaws.com/itpacs-celery:staging",
+	"essential": true,
+	"memoryReservation": 200,
+	"portMappings": [
+	
+	],
+	"command":["celery" ,"-A" ,"app.celery", "worker", "--loglevel=info" ,"--config=celeryconfig" ],
+	"environment": [
+        {
+          "name": "APP_SETTINGS",
+          "value": "project.config.ProductionConfig"
+        },
+        {
+          "name": "CELERY_BACKEND",
+          "value": "redis://redis:6379/0"
+        },
+        {
+          "name": "CELERY_BROKER",
+          "value": "redis://redis:6379/0"
+        },
+        {
+          "name": "DB_MONGO_URL",
+          "value": "mongodb://mongodb:27017/itpacs01"
+        },
+        {
+          "name": "MAIL_PASSWORD",
+          "value": "Inurtura123"
+        },
+        {
+          "name": "MAIL_USERNAME",
+          "value": "contact@itpacs.org"
+        },
+         {
+          "name": "CELERY_IMPORTS",
+          "value": "tasks"
+        },
+         {
+          "name": "C_FORCE_ROOT",
+          "value": "true"
+        }
+      ],
+ "links": [
+        "users",
+        "mongodb",
+        "redis",
+        "users-db"
+      ],
+"logConfiguration": {
+	"logDriver": "awslogs",
+	"options": {
+	"awslogs-group": "itpacs-celery-stage-logs",
+	"awslogs-region": "ap-southeast-1"
+			}
+		}
+	}
+
+],
+"family": "itpacs-users-stage-td"
+}

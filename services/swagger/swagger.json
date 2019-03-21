@@ -1,0 +1,334 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"version": "0.0.1",
+		"title": "REST Services for ITPACS",
+		"description": "Swagger specification for documenting the REST services for ITPACS. The backend is built with Python."
+	},
+	"servers": [
+		{
+			"url": "http://localhost"
+		}
+	],
+
+	"paths": {
+		"/users/ping": {
+			"get": {
+				"summary": "Check if server is up and receiving requests",
+				"responses": {
+					"200": {
+						"description": "Will return PONG!. This service does not require
+						authentication."
+					}
+				}
+			}
+		},
+
+		"/users": {
+			"get": {
+				"summary": "This service returns all users. User making the request needs to be authenticated
+				and should be a admin",				
+				
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+
+				"responses": {
+					"200": {
+						"description": "User object containing, firstname, lastname, email and admin"
+					}
+				}
+			}
+		},
+
+		"/auth/register": {
+			"post": {
+				"summary": "Creates a new user. This route is called when user registers for an account.
+				Upon registration, an email is sent to confirm. If user already exists, a error message is sent.",
+				"requestBody": {
+					"description": "User details to add",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/user-full"	
+							}
+						}
+					},
+					"responses": {
+						"200": {
+							"description": "User auth token is returned"
+						}
+					}
+				}
+			}
+		},
+
+
+
+		"/auth/login": {
+			"post": {
+				"summary": "Logs a user in. Send email and password.",
+				"requestBody": {
+					"description": "User to log in.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/user"	
+							}
+						}
+					}
+				},
+			"responses": {
+			"200": {
+			"description": "Successfully logged in. Auth token is received."
+				}
+			}
+		}
+	},
+
+		"/auth/status": {
+			"get": {
+				"summary": "Returns the logged in user details. Also shows list of applications. User has to be authenticated.",
+			
+			"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+			"responses": {
+				"200": {
+					"description": "User information including applications that a user has applied for."
+				}
+			}
+ 		 }
+		},
+
+		"/auth/logout": {
+			"get": {
+				"summary": "Logs a user out",
+			
+			"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+			"responses": {
+				"200": {
+					"description": "Successfully logged out"
+				}
+			}
+		 }
+		},
+
+	"/auth/application": {
+			"post": {
+				"summary": "Submits/Saves an  exam application. User needs to be authenticated",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+
+				"requestBody": {
+					"description": "Filled up application fields are to be submitted.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/application-full"	
+							}
+						}
+					},	
+
+					"responses": {
+						"200": {
+							"description": "Application saved/submitted."
+						},
+						"400":{
+							"description": "Failed. Unable to process application." 
+						}
+					}
+				}
+			}
+		},	
+
+
+
+
+	},
+	"components": {
+
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+
+			},
+
+		"schemas": {
+			"user": {
+				"properties": {
+					"email":{
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				}
+			},
+			"user-full": {
+				"properties": {
+					"firstname": {
+						"type": "string"
+					},
+					"lastname": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"password":{
+						"type": "string"
+					}
+				}
+			},
+			"application-full": {
+				"properties":{
+					"domain":{
+						"type":"string",
+						"required": false
+					},
+					"certificate": {
+						"type":"string",
+						"required": true
+						},
+					"contact_firstname":{
+						"type":"string",
+						"required": false
+						},
+					"contact_lastname":{
+						"type":"string",
+						"required": false
+						},
+					"contact_email":{
+						"type":"string",
+						"required": false
+						},
+					"contact_streetaddress":{
+						"type":"string",
+						"required": false
+						},
+					"contact_homecountry":{
+						"type":"string",
+						"required": false
+						},
+					"contact_phonenumber":{
+						"type":"string",
+						"required": false
+						},
+					"contact_company_name":{
+						"type":"string",
+						"required": false
+						},
+					"education_highest_degree":{
+						"type":"string",
+						"required": false
+						},
+					"education_year":{
+						"type":"string",
+						"required": false
+						},
+					"education_school":{
+						"type":"string",
+						"required": false
+						},
+					"education_city":{
+						"type":"string",
+						"required": false
+						},
+					"education_country":{
+						"type":"string",
+						"required": false
+						},
+					"general_main_language":{
+						"type":"string",
+						"required": false
+						},
+					"general_coding_years":{
+						"type":"string",
+						"required": false
+						},
+					"general_coding_languages":{
+						"type":"string",
+						"required": false
+						},
+					"general_industry":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_name_1":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_description_1":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_start_date_1":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_start_date_2":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_responsible":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_accountable":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_consulted":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_informed":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_company_1":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_reference_name_1":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_reference_email_1":{
+						"type":"string",
+						"required": false
+						},
+					"requirements_project_reference_phonenumber_1":{
+						"type":"string",
+						"required": false
+						},
+					"terms_agree":{
+						"type":"string",
+						"required": false
+						},
+					"status":{
+						"type":"string",
+						"required": true
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,117 @@
+version: '3.4'
+services:
+ users:
+  container_name: users
+  build:
+   context: ./services/users
+   dockerfile: Dockerfile-stage
+  expose:
+  - 5000
+  environment:
+  - FLASK_ENV=production
+  - APP_SETTINGS=project.config.StagingConfig
+  - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_stage
+  - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+  - SECRET_KEY=${SECRET_KEY}
+  - MAIL_USERNAME=${MAIL_USERNAME}
+  - MAIL_PASSWORD=${MAIL_PASSWORD}
+  - DB_MONGO_URL=mongodb://mongodb:27017/itpacs01
+  - CELERY_BROKER=redis://redis:6379/0
+  - CELERY_BACKEND=redis://redis:6379/0
+  - C_FORCE_ROOT = True
+  depends_on:
+  - users-db
+  - mongodb
+  - redis
+  links:
+  - users-db
+  - mongodb
+  - redis
+
+ celery:
+  container_name: celery
+  build:
+   context: ./services/celery
+   dockerfile: Dockerfile-stage
+  # volumes: 
+  #  - './services/users:/usr/src/app'
+  environment:
+   - CELERY_BROKER=redis://redis:6379/0
+   - CELERY_BACKEND=redis://redis:6379/0
+   - DB_MONGO_URL=mongodb://mongodb:27017/itpacs01
+   - APP_SETTINGS=project.config.StagingConfig
+   - SECRET_KEY=${SECRET_KEY}
+   - MAIL_USERNAME=${MAIL_USERNAME}
+   - MAIL_PASSWORD=${MAIL_PASSWORD}
+  depends_on:
+   - users-db
+   - redis
+   - mongodb
+   - users 
+
+ mongodb:
+  container_name: "mongodb"
+  build:
+   context: ./services/mongo
+   dockerfile: Dockerfile-prod  
+  environment:
+   - MONGO_DATA_DIR=/usr/data/db
+   - MONGO_LOG_DIR=/dev/null
+  volumes:
+   - ./data/db:/usr/data/db
+  ports:
+   - 27017:27017 
+
+ users-db:
+   container_name: users-db
+   build:
+    context: ./services/users/project/db
+    dockerfile: Dockerfile
+   expose:
+    - 5432
+   environment:
+   - POSTGRES_USER=postgres
+   - POSTGRES_PASSWORD=postgres
+
+ nginx:
+   container_name: nginx
+   build: 
+      context: ./services/nginx
+      dockerfile: Dockerfile-stage
+   restart: always
+   ports:
+   - 80:80
+   depends_on:
+   - users
+   - client2
+
+ client2:
+    container_name: client2
+    build:
+      context: ./services/client2
+      dockerfile: Dockerfile-stage
+    expose:
+      - 80
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+    depends_on:
+      - users
+    links:
+      - users
+
+ redis:
+  image: redis:latest
+  container_name: redis
+
+ swagger:
+  container_name: swagger
+  build:
+    context: ./services/swagger
+    dockerfile: Dockerfile-stage
+  expose:
+   - 8080
+  environment:
+   - URL=swagger_stage.json
+  depends_on:
+   - users

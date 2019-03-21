@@ -1,0 +1,22 @@
+Dear {{firstname}} {{lastname}}
+
+We have received your application and will start the review process. The review process involves evaluating your application on the eligibility criterion. The review process takes up to 5 business days. 
+
+Around 10-20 percent of all applications are randomly selected for audit. If your application is selected for audit, we will get in touch with your reference provided in the application. In this case, the review process takes up to 10 business days. 
+
+Once review is completed, you can schedule your exam. 
+
+For applicants who fail the review process, you will need to wait 1 year before you can submit your application again. 
+
+	Certificate: {{application_details["certificate"]}}
+	First Name: {{application_details["contact_firstname"]}} 
+	Last Name: {{application_details["contact_lastname"]}} 
+	Project: {{application_details["requirements_project_name_1"]}}
+	Project Description: {{application_details["requirements_project_description_1"]}}
+	Company: {{application_details["requirements_project_company_1"]}}
+	Reference: {{application_details["requirements_project_reference_name_1"]}}
+	Reference Email: {{application_details["requirements_project_reference_email_1"]}}
+	Reference Telephone: {{application_details["requirements_project_reference_phonenumber_1"]}}
+
+Cheers!
+ITPACS Certification Team
