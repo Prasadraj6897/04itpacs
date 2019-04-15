@@ -186,7 +186,7 @@ class PV2 extends React.Component {
                  <MDBCol lg="4" className="mb-4">
                      <MDBCard narrow>
                          <MDBView cascade className="mdb-color lighten-3 card-header">
-                             <h5 className="mb-0 font-weight-bold text-center text-white">{this.state.lastname}</h5>
+                             <h5 className="mb-0 font-weight-bold text-center text-white">{this.state.firstname}</h5>
                          </MDBView>
 
                          <MDBCardBody className="text-center">
