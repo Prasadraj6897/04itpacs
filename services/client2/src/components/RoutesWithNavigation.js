@@ -326,11 +326,9 @@ class App extends React.Component {
                         isAuthenticated={this.state.isAuthenticated}
                         loginUser={this.loginUser}
                         createMessage={this.createMessage}
-                        logoutUser={this.logoutUser} />
-                        onChange={()=>this.assessLocation()} 
+                        logoutUser={this.logoutUser}
+                        onChange={()=>this.assessLocation()} />
                   </main>
-
-
                 }
 
                 {this.state.isAuthenticated &&

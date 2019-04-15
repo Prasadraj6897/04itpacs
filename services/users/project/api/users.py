@@ -1,7 +1,7 @@
 # services/users/project/api/users.py 
 
 from flask import Blueprint, jsonify, request, render_template, current_app, flash
-from . models import User, ProfileImage, Application, User_M, Application_M
+from . models import User, ProfileImage, Application, User_M, Application_M, ProfileImage_M, Accountdetails, Accountdetails_M
 # from project.app import db, mongoEngine, pyMongo
 from project.app import db, mongoEngine
 from sqlalchemy import exc
@@ -30,7 +30,13 @@ from flask import url_for
 
 from pymongo import MongoClient
 import base64
-import os, boto3
+import os
+import boto
+
+from werkzeug.utils import secure_filename
+from uuid import uuid4
+import time
+from sqlalchemy.orm import load_only, Load, joinedload
 
 users_blueprint = Blueprint('users', __name__, template_folder='./templates')
 
@@ -69,8 +75,6 @@ def sub(param1, param2):
 	# ans = task.get()
 
 	msg = "<a href='{url}'> click to check status of {id}</a>".format(url=url_for('users.checksubtract', task_id=task.id, _external=True), id=task.id)
-
-
 	return msg
 
 
@@ -86,8 +90,6 @@ def checksubtract(task_id):
 	return jsonify(response)
 
 
-
-
 @users_blueprint.route('/users/ping', methods=['GET'])
 def ping_pong():
 
@@ -95,6 +97,7 @@ def ping_pong():
 		'status': 'success',
 		'message': 'pong'
 		})
+
 
 @users_blueprint.route('/users/add/<int:param1>/<int:param2>')
 def add(param1, param2):
@@ -115,6 +118,7 @@ def add(param1, param2):
 		
 	# 	})
 
+
 @users_blueprint.route('/users/check_task/<string:id>')
 def check_task(id):
 	task = AsyncResult(id, app=celery_app)
@@ -123,8 +127,6 @@ def check_task(id):
 			 
 	}
 	return jsonify(response)
-
-
 
 
 # @users_blueprint.route('/users', methods=['POST'])
@@ -238,19 +240,68 @@ def get_all_users(resp):
 	return jsonify(response_object), 200
 
 
-@users_blueprint.route('/users/uploads', methods=['POST'])
+@users_blueprint.route('/users/uploadImageToS3', methods=['POST'])
 @authenticate
-def uploads(resp):
+def uploadImageToS3(resp):
 
+	userId = resp
 	post_data = request.get_json()
-	imgUrl = post_data.get('img')
-	border_radius = post_data.get('imgBorder')
+	imageStr = post_data.get('imageData')
+	imgType = post_data.get('imageType')
+	imgBorder = post_data.get('imageBorder')
+	prevImage = post_data.get('previousImg')
+	prevImageName = post_data.get('fileName')
 
-	user = User.query.filter_by(id=resp).first()
+	# create new file name
+	destination_filename = uuid4().hex + '.' + imgType
 
+	data = {
+		'acl': 'public-read',
+		'S3_LOCATION': current_app.config['S3_LOCATION'],
+		"S3_BUCKET": current_app.config["S3_BUCKET"],
+		'S3_KEY': current_app.config['S3_KEY'],
+		'S3_SECRET': current_app.config['S3_SECRET'],
+		'S3_UPLOAD_DIRECTORY': current_app.config['S3_UPLOAD_DIRECTORY'],
+		'UPLOAD_FOLDER': current_app.config['UPLOAD_FOLDER'],
+		'Image_String': imageStr,
+		"destinationFileName": destination_filename
+	}
+
+	celery.send_task('s3_upload_image', args=[data])
+	object_url = "https://s3-{0}.amazonaws.com/{1}/{2}/{3}".format(data["S3_LOCATION"], data["S3_BUCKET"], data["S3_UPLOAD_DIRECTORY"], data["destinationFileName"])
+
+	# Insert user image details into postgres and mongo database
+	imgData = {
+		'userId': userId,
+		'imageUrl': object_url,
+		'borderRadius': imgBorder,
+		'prevImageName': prevImageName
+	}
+	userImageDetails(imgData) 
+	# End Insert user image details into postgres and mongo database
+
+	time.sleep(2)
+
+	return jsonify({
+		'status': 'success',
+		'url': object_url
+	})
+
+# Below function userImageDetails used to store user image details into postgres and mongo database
+def userImageDetails(imgData):
+
+	userId = imgData['userId']
+	imgUrl = imgData['imageUrl']
+	border_radius = imgData['borderRadius']
+	prevImageName = imgData['prevImageName']
+
+	user = User.query.filter_by(id=userId).first()
 	profile = ProfileImage.query.filter_by(user_id=user.id).first()
 
-	if not profile:
+	profile_m = ProfileImage_M.objects(__raw__={'user_id': userId}).first()
+
+	if not profile or not profile_m:
+		# Insert image data into postgres database
 		new_image = ProfileImage(
 						user_id=user.id,
 						image_location=imgUrl,
@@ -260,21 +311,75 @@ def uploads(resp):
 		db.session.add(new_image)
 		db.session.commit()
 
-		return jsonify({
-			'status': 'success',
-			'message': 'Inserted'
-		})
+		# Also, Insert image data into mongo database
+		new_imageM = ProfileImage_M(
+						user_id=new_image.user_id,
+						image_location=new_image.image_location,
+						border_radius=new_image.border_radius,
+						status=new_image.status
+					)
+		new_imageM.save()
+
+		return 'Inserted'
+
 	else:
+		# Update new image into postgres database
 		profile.image_location = imgUrl
 		profile.border_radius = border_radius
 		db.session.commit()
 
-		return jsonify({
-			'status': 'success',
-			'message': 'Updated'
-		})
+		# Also, Update new image into mongo database
+		profile_m.image_location = imgUrl
+		profile_m.border_radius = border_radius
+		profile_m.save()
 
-	
+		# Here remove previous image from S3
+		deleteProfileImageS3(prevImageName)
+
+		return 'Updated'
+
+
+# Below funtion for remove profile image from S3 while adding new profile image
+def deleteProfileImageS3(prevImageName):
+
+	destinationFileName = prevImageName
+	data = {				
+		"S3_BUCKET": current_app.config["S3_BUCKET"],
+		'S3_KEY': current_app.config['S3_KEY'],
+		'S3_SECRET': current_app.config['S3_SECRET'],
+		'S3_UPLOAD_DIRECTORY': current_app.config['S3_UPLOAD_DIRECTORY'],								
+		"destinationFileName": destinationFileName
+	}
+
+	celery.send_task('s3_delete_image', args=[data])
+
+
+@users_blueprint.route('/users/deleteprofile', methods=['POST'])
+@authenticate
+def deleteprofile(resp):
+
+	post_data = request.get_json()
+	prevImageName = post_data.get('fileName')
+
+	user = User.query.filter_by(id=resp).first()
+
+	# Delete user profile image data in postgres database
+	profile = ProfileImage.query.filter_by(user_id=user.id).first()
+	db.session.delete(profile)
+	db.session.commit()
+
+	# Delete user profile image document in mongo database
+	profile_m = ProfileImage_M.objects(__raw__={'user_id': user.id}).first()
+	profile_m.delete()
+
+	deleteProfileImageS3(prevImageName)
+
+	return jsonify({
+		'status': 'https://mdbootstrap.com/img/Photos/Avatars/avatar-4.jpg',
+		'message': 'pong'
+	})
+
+
 
 @users_blueprint.route('/users/getprofile', methods=['GET'])
 @authenticate
@@ -297,19 +402,6 @@ def getProfile(resp):
 			'imgBorder': profile.border_radius
 		})
 
-@users_blueprint.route('/users/deleteprofile', methods=['GET'])
-@authenticate
-def deleteprofile(resp):
-
-	user = User.query.filter_by(id=resp).first()
-	profile = ProfileImage.query.filter_by(user_id=user.id).first()
-	db.session.delete(profile)
-	db.session.commit()
-
-	return jsonify({
-		'status': 'https://mdbootstrap.com/img/Photos/Avatars/avatar-4.jpg',
-		'message': 'pong'
-	})
 
 @users_blueprint.route('/users/insertaccountdetails', methods=['POST'])
 @authenticate
@@ -317,19 +409,94 @@ def insertaccountdetails(resp):
 
 	user = User.query.filter_by(id=resp).first()
 	
-	post_data = request.get_json()
-	company = post_data.get('company')
+	post_data	= request.get_json()
+	username	= post_data.get('username')
+	firstname	= post_data.get('firstname')
+	lastname	= post_data.get('lastname')
+	company		= post_data.get('company')
+	job			= post_data.get('job')
+	city		= post_data.get('city')
+	country		= post_data.get('country')
+	aboutme		= post_data.get('aboutme')
+	institute	= post_data.get('institute')
+
+	account = Accountdetails.query.filter_by(user_id=user.id).first()
+	account_m = Accountdetails_M.objects(__raw__={'user_id': user.id}).first()
+	# Update user details in postgres database
+	if user:
+		# user.email=username,
+		user.firstname=firstname,
+		user.lastname=lastname
+		db.session.commit()
+
+	if not account or not account_m:
+		# Insert account details into postgres database
+		new_accountdetails = Accountdetails(
+								user_id=user.id,
+								company=company,
+								job_title=job,
+								city=city,
+								country=country,
+								instituition=institute,
+								about_me=aboutme
+							)
+		db.session.add(new_accountdetails)
+		db.session.commit()
+
+		# Also, Insert user account data into mongo database
+		new_accountM = Accountdetails_M(
+						user_id=new_accountdetails.user_id,
+						company=new_accountdetails.company,
+						job_title=new_accountdetails.job_title,
+						city=new_accountdetails.city,
+						country=new_accountdetails.country,
+						instituition=new_accountdetails.instituition,
+						about_me=new_accountdetails.about_me
+					)
+		new_accountM.save()
+	else:
+		# Update account details in postgres database
+		account.user_id=user.id
+		account.company=company
+		account.job_title=job
+		account.city=city
+		account.country=country
+		account.instituition=institute
+		account.about_me=aboutme
+		db.session.commit()
+
+		# Update account details in mongo database
+		account_m.company=company
+		account_m.job_title=job
+		account_m.city=city
+		account_m.country=country
+		account_m.instituition=institute
+		account_m.about_me=aboutme
+		account_m.save()
 
 	return jsonify({
 		'status': company,
 		'message': 'pong'
 	})
 
-@users_blueprint.route('/users/test', methods=['GET'])
-def testusers():
 
-	user = db.session.query(User.firstname, ProfileImage.image_location).join(ProfileImage, ProfileImage.user_id == User.id).first()
-	return jsonify({
-			'status': user.firstname,
-			'message': 'Thank you'
-		})
+@users_blueprint.route('/users/userbasicdetails', methods=['GET'])
+@authenticate
+def getuserbasicdetails(resp):
+	
+	userJoin = db.session.query(User).outerjoin(Accountdetails).filter(User.id == resp).first()
+	user = userJoin.to_json()
+	response_object = {
+						'data': user
+					  }
+	return jsonify(response_object), 200
+
+@users_blueprint.route('/users/testuserbasicdetails', methods=['GET'])
+def testgetuserbasicdetails():
+	
+	userJoin = db.session.query(User).outerjoin(Accountdetails).filter(User.id == 4).first()
+	user = userJoin.to_json()
+	response_object = {
+						'data': user
+					  }
+	return jsonify(response_object), 200

@@ -16,5 +16,5 @@ redis
 rq
 Flask-Mail
 celery
-boto3
+boto
 

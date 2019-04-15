@@ -5,6 +5,7 @@ import jwt
 import datetime 
 import sys
 from project.app import db, bcrypt, mongoEngine
+# from sqlalchemy.orm import relationship
 # from project.app import db, bcrypt, mongoEngine, pyMongo
 
 
@@ -25,6 +26,23 @@ class User_M(mongoEngine.Document):
 	password = mongoEngine.StringField(max_length=200, required=True)
 	email_sent = mongoEngine.BooleanField()
 	confirmed  = mongoEngine.BooleanField()
+
+class ProfileImage_M(mongoEngine.Document):
+	user = mongoEngine.ReferenceField(User_M, required=False)
+	user_id = mongoEngine.IntField(required=True)
+	image_location = mongoEngine.StringField(max_length=200, required=False)
+	border_radius = mongoEngine.IntField(required=True)
+	status = mongoEngine.IntField(required=True)
+
+class Accountdetails_M(mongoEngine.Document):
+	user = mongoEngine.ReferenceField(User_M, required=False)
+	user_id = mongoEngine.IntField(required=True)
+	company = mongoEngine.StringField(max_length=200, required=False)
+	job_title = mongoEngine.StringField(max_length=200, required=False)
+	city = mongoEngine.StringField(max_length=200, required=False)
+	country = mongoEngine.StringField(max_length=200, required=False)
+	instituition = mongoEngine.StringField(max_length=200, required=False)
+	about_me = mongoEngine.StringField(max_length=200, required=False)
 	
 class Application_M(mongoEngine.Document):
 
@@ -75,7 +93,7 @@ class User(db.Model):
 	admin = db.Column(db.Boolean, default=False, nullable=False)
 	email_sent = db.Column(db.Boolean, default=False, nullable=False)
 	confirmed = db.Column(db.Boolean, default=False, nullable=False)
-	# applications = db.relationship('Application', backref='user', lazy=True)
+	accountdetails = db.relationship('Accountdetails', lazy='dynamic', backref=db.backref('users', lazy=True))
 	
 
 	def __init__(self, firstname, lastname, email, password):
@@ -92,9 +110,9 @@ class User(db.Model):
 			'email': self.email,
 			'admin': self.admin,
 			'email_sent': self.email_sent,
-			'confirmed': self.confirmed
-			# 'applications': [self.showCertInfo(app) for app in self.applications]
-			}
+			'confirmed': self.confirmed,
+			'accountdetails': [upload.to_json() for upload in self.accountdetails]
+		}
 
 	def showCertInfo(self, app):
 		return {
@@ -213,7 +231,7 @@ class Application(db.Model):
 class ProfileImage(db.Model):
 	__tablename__ = "profileimage"
 	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	user_id = db.Column(db.Integer, nullable=False)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 	image_location = db.Column(db.String(128), nullable=False)
 	border_radius = db.Column(db.String(100), nullable=False)
 	status = db.Column(db.String(140), nullable=False)
@@ -228,4 +246,30 @@ class ProfileImage(db.Model):
 			'image_location': self.image_location,
 			'border_radius': self.border_radius,
 			'status': self.status,
+		}
+
+class Accountdetails(db.Model):
+	__tablename__ = "accountdetails"
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+	company = db.Column(db.String(128), nullable=False)
+	job_title = db.Column(db.String(100), nullable=False)
+	city = db.Column(db.String(100), nullable=False)
+	country = db.Column(db.String(100), nullable=False)
+	instituition = db.Column(db.String(100), nullable=False)
+	about_me = db.Column(db.String(140), nullable=False)
+
+	def __init__(self, **kwargs):
+		super(Accountdetails, self).__init__(**kwargs)
+
+	def to_json(self):
+		return {
+			'id': self.id,
+			'user_id': self.user_id,
+			'company': self.company,
+			'job_title': self.job_title,
+			'city': self.city,
+			'country': self.country,
+			'instituition': self.instituition,
+			'about_me': self.about_me
 		}

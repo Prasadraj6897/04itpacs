@@ -4,7 +4,7 @@ import unittest
 from flask.cli import FlaskGroup
 # from project.app import create_app, db, mongoEngine, pyMongo
 from project.app import create_app, db, mongoEngine
-from project.api.models import User, Application, Application_M, User_M, Certificate_M
+from project.api.models import User, Application, Application_M, User_M, Certificate_M, Accountdetails_M
 
 
 

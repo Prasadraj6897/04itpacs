@@ -173,8 +173,6 @@ def register_user():
 							email=new_user.email,
 							password=new_user.password
 							)
-			
-			
 			new_userM.save()
 
 			#Email confirmation steps

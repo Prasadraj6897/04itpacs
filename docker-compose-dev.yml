@@ -26,9 +26,11 @@ services:
    - CELERY_BROKER=redis://redis:6379/0
    - CELERY_BACKEND=redis://redis:6379/0
    - C_FORCE_ROOT=true
-   - S3_BUCKET=${S3_BUCKET}
    - S3_KEY=${S3_KEY}
-   - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+   - S3_BUCKET=${S3_BUCKET}
+   - S3_SECRET=${S3_SECRET_ACCESS_KEY}
+   - S3_UPLOAD_DIRECTORY=${S3_UPLOAD_DIRECTORY}
+   - S3_FILE_UPLOAD_DIRECTORY=${S3_FILE_UPLOAD_DIRECTORY}
  celery:
   container_name: celery
   build:
@@ -50,6 +52,10 @@ services:
    - CELERY_IMPORTS=tasks
    - MONGODB_USERNAME=admin
    - MONGODB_PASSWORD=Inurtura123
+   - S3_KEY =${S3_KEY}
+   - S3_SECRET =${S3_SECRET}
+   - S3_BUCKET =${S3_BUCKET}
+   - S3_UPLOAD_DIRECTORY =${S3_UPLOAD_DIRECTORY}
   depends_on:
    - users-db
    - redis

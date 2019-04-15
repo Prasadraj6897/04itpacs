@@ -24,6 +24,13 @@ class BaseConfig:
 	CELERY_RESULT_BACKEND=os.environ.get('CELERY_BACKEND')
 	CELERY_BROKER_URL=os.environ.get('CELERY_BROKER')
 	CELERY_IMPORTS = ('tasks')
+	UPLOAD_FOLDER = '/tmp/'
+	S3_BUCKET = os.environ.get("S3_BUCKET")
+	S3_UPLOAD_DIRECTORY = os.environ.get("S3_UPLOAD_DIRECTORY")
+	S3_FILE_UPLOAD_DIRECTORY = os.environ.get("S3_FILE_UPLOAD_DIRECTORY")
+	S3_KEY = os.environ.get("S3_KEY")
+	S3_SECRET = os.environ.get("S3_SECRET")
+	S3_LOCATION = 'ap-southeast-1'
 	
 	#Flask-pymongo var
 	# MONGO_URI = os.environ.get('DB_MONGO_URL')
