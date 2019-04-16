@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios'
 import Avatar from './AvatarProfile.js'
+import {accountFormRules} from '../../forms/form_rules.js'
 import { 
   MDBRow,
   MDBCol,
@@ -15,6 +16,7 @@ import {
   MDBModal,
 } from 'mdbreact';
 import './Profile.css';
+import AccountFieldError from './AccountFieldErr.js'
 
 
 class PV2 extends React.Component {
@@ -36,6 +38,8 @@ class PV2 extends React.Component {
       aboutme:'',
       imageBorder:'',
       account:false,
+      valid:false,
+      accountFormRules:accountFormRules
     }
     this.getProfileImage = this.getProfileImage.bind(this)
     this.getUserBasicDetails = this.getUserBasicDetails.bind(this)
@@ -91,6 +95,7 @@ class PV2 extends React.Component {
             aboutme:ObjUserAccount.about_me
           })
         }
+        this.formValid()
       }
     })
     .catch((error)=>{console.log(error)})
@@ -161,9 +166,10 @@ class PV2 extends React.Component {
   }
 
   handleChange = (e) => {
-    const obj ={}
+    const obj = this.state
     obj[e.target.name] = e.target.value
     this.setState(obj)
+    this.formValid()
   }
 
   toggle = () => {
@@ -178,7 +184,50 @@ class PV2 extends React.Component {
     }); 
   }
 
+  formValid(){
+    const formRules = this.state.accountFormRules
+    if(this.state.firstname.length > 2){
+      formRules[0].valid = true
+    }else{
+      formRules[0].valid = false
+    }
+
+    if(this.state.lastname.length > 2){
+      formRules[1].valid = true
+    }else{
+      formRules[1].valid = false
+    }
+
+    if(this.state.company.length > 4){
+      formRules[2].valid = true
+    }else{
+      formRules[2].valid = false
+    }
+
+    if(this.state.job.length > 0){
+      formRules[3].valid = true
+    }else{
+      formRules[3].valid = false
+    }
+
+    this.setState({accountFormRules: formRules})
+    if (this.allTrue()){
+      this.setState({valid:true})
+    }else{
+      this.setState({valid:false})
+    }
+  }
+
+  allTrue(){
+    let formRules = accountFormRules
+    for (const rule of formRules){
+      if(!rule.valid) return false
+    }
+    return true
+  }
+
   render(){
+    let formRules = this.state.accountFormRules
     return (
       <div id="profile-v2" className="mb-5">
          <MDBContainer fluid>
@@ -304,7 +353,7 @@ class PV2 extends React.Component {
                         <MDBView cascade className="mdb-color lighten-3 card-header">
                              <h5 className="mb-0 font-weight-bold text-center text-white">Edit Account Details</h5>
                          </MDBView>
-                         <MDBCardBody className="text-center">
+                         <MDBCardBody>
                                  <MDBRow>
                                      <MDBCol md="6">
                                          <MDBInput
@@ -323,6 +372,8 @@ class PV2 extends React.Component {
                                             onChange={e => this.handleChange(e)}
                                             value={this.state.firstname}
                                           />
+                                          <AccountFieldError 
+                                            formRulesObject = {formRules[0]}/>
                                      </MDBCol>
                                  </MDBRow>
                                  <MDBRow>
@@ -334,6 +385,8 @@ class PV2 extends React.Component {
                                             onChange={e => this.handleChange(e)}
                                             value={this.state.lastname}
                                           />
+                                          <AccountFieldError 
+                                            formRulesObject = {formRules[1]}/>
                                      </MDBCol>
                                      <MDBCol md="6">
                                             <MDBInput
@@ -343,6 +396,8 @@ class PV2 extends React.Component {
                                             onChange={e => this.handleChange(e)}
                                             value={this.state.company}
                                           />
+                                          <AccountFieldError 
+                                            formRulesObject = {formRules[2]}/>
                                      </MDBCol>
                                  </MDBRow>
                                  <MDBRow>
@@ -354,6 +409,8 @@ class PV2 extends React.Component {
                                             onChange={e => this.handleChange(e)}
                                             value={this.state.job}
                                           />
+                                          <AccountFieldError 
+                                            formRulesObject = {formRules[3]}/>
                                      </MDBCol>
                                      <MDBCol md="6">
                                          <MDBInput
@@ -398,7 +455,7 @@ class PV2 extends React.Component {
                                  </MDBRow>
                                  <MDBRow>
                                    <MDBCol md="12" className="text-center">
-                                      <MDBBtn color="info" type="submit" rounded onClick={(e) => this.addAccountDetails(e)}>Update account</MDBBtn>
+                                      <MDBBtn color="info" disabled={!this.state.valid} type="submit" rounded onClick={(e) => this.addAccountDetails(e)}>Update account</MDBBtn>
                                    </MDBCol>
                                 </MDBRow>
                          </MDBCardBody>

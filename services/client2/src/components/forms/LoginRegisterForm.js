@@ -184,7 +184,6 @@ class LoginRegisterForm extends React.Component {
 				formRules[5].valid = true
 			}
 
-
 			this.setState({registerFormRules: formRules})
 			if (this.allTrue()){
 				this.setState({valid:true})
@@ -206,9 +205,7 @@ class LoginRegisterForm extends React.Component {
 				if (this.allTrue()){
 				this.setState({valid:true})
 			}
-
-
-			}
+		}
 
 		if (this.props.formType==='resetpassword'){
 				const formRules = this.state.resetpasswordFormRules

@@ -85,3 +85,31 @@ export const updatepasswordFormRules = [
 		}
 
 	]
+
+
+export const accountFormRules = [
+		{
+			id:1,
+			field:'firstname',
+			name:'First name must be more than 2 characters.',
+			valid:false
+		},
+		{
+			id:2,
+			field:'lastname',
+			name:'Last name must be more than 2 characters.',
+			valid:false
+		},
+		{
+			id:3,
+			field:'company',
+			name:'Company name must be more than 4 characters.',
+			valid:false
+		},
+		{
+			id:4,
+			field:'job',
+			name:'Please enter job.',
+			valid:false
+		}
+	]
