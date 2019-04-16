@@ -98,6 +98,7 @@ services:
    depends_on:
    - users
    - client
+   - courses
 
  client:
   container_name: client
@@ -135,3 +136,17 @@ services:
    - URL=swagger.json
   depends_on:
    - users
+
+ courses:
+  container_name: courses
+  build:
+   context: ./services/courses
+   dockerfile: Dockerfile-dev
+  ports:
+   - 5002:5000
+  volumes:
+    - './services/courses:/usr/src/app'
+  environment:
+   - FLASK_APP=project/__init__.py
+   - FLASK_ENV=development
+   - APP_SETTINGS=project.config.DevelopmentConfig

@@ -455,7 +455,8 @@ class PV2 extends React.Component {
                                  </MDBRow>
                                  <MDBRow>
                                    <MDBCol md="12" className="text-center">
-                                      <MDBBtn color="info" disabled={!this.state.valid} type="submit" rounded onClick={(e) => this.addAccountDetails(e)}>Update account</MDBBtn>
+                                      <MDBBtn color="info" disabled={!this.state.valid} type="submit" rounded size="sm" onClick={(e) => this.addAccountDetails(e)}>Update account</MDBBtn>
+                                      <MDBBtn color="danger" onClick={this.accountToggle} rounded size="sm">Close</MDBBtn>
                                    </MDBCol>
                                 </MDBRow>
                          </MDBCardBody>
