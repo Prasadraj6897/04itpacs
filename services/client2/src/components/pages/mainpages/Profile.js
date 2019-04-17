@@ -160,7 +160,8 @@ class PV2 extends React.Component {
     }
     return axios(options)
     .then((res)=>{
-      console.log(res.data)
+      /*console.log(res.data)*/
+      this.accountToggle()
     })
     .catch((error)=>{console.log(error)})
   }
