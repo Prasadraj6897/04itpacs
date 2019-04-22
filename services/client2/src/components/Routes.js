@@ -19,6 +19,7 @@ import Certifications from './pages/mainpages/Certifications'
 import TrainingProvider from './pages/mainpages/TrainingProvider'
 import Examfees from './pages/mainpages/Examfees.js'
 import Profile from './pages/mainpages/Profile'
+import Courses from './pages/coursepages/Courses'
 
 class Routes extends React.Component {
 
@@ -109,6 +110,9 @@ class Routes extends React.Component {
 
           )} />
 
+        <Route exact path='/courses' render={() => (
+          <Courses />
+        )} />
 
 
 

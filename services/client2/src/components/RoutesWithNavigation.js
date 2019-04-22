@@ -260,7 +260,7 @@ class App extends React.Component {
         case '/profile':
           locationString= 'Profile'
           break;
-        case '/courses':
+        case '/Courses':
           locationString= 'Courses'
           break;
         case '/becometrainingprovider':

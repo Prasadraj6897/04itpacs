@@ -118,6 +118,7 @@ services:
    - REACT_APP_S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
   depends_on:
    - users
+   - courses
 
  redis:
   image: redis:latest
@@ -147,6 +148,5 @@ services:
   volumes:
     - './services/courses:/usr/src/app'
   environment:
-   - FLASK_APP=project/__init__.py
    - FLASK_ENV=development
    - APP_SETTINGS=project.config.DevelopmentConfig

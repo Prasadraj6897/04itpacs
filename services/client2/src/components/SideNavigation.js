@@ -50,7 +50,7 @@ class SideNavigation extends React.Component {
 
               
 
-              <li><Link to="/courses" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="book" className="mr-2 red-text" /> Courses</Link></li>
+              <li><Link to="/Courses" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="book" className="mr-2 red-text" /> Courses</Link></li>
               <li><Link to="/takeexam" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="balance-scale" className="mr-2 pink-text" /> Exams</Link></li>              
               <li><Link to="/becometrainingprovider" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="group" className="mr-2 cyan-text" />Training Provider</Link></li>
               <li><Link to="/contactus" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="envelope-o" className="mr-2 red-text" /> Contact us</Link></li>
