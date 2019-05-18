@@ -1,6 +1,6 @@
 import React from 'react'
 import {CardTitle, CardText, Jumbotron, Autocomplete, InputNumeric, Select, Fa, SelectInput, SelectOptions, SelectOption, Row, Col, Card, CardBody, Container, Stepper, Step, Input, Button} from 'mdbreact';
-import {applicationFormRules} from './ApplicationFormRules.js'
+
 import {countries, qualifications, years} from './selectLists.js'
 import {Link} from 'react-router-dom'
 
@@ -17,6 +17,10 @@ import Terms from './termsconditions'
 import Message from '../Message'
 
 import axios from 'axios'
+
+import ApplicationFielder from './ApplicationFielder.js'
+import {applicationFormRules} from './ApplicationFormRules.js'
+import './ApplicationError.css';
 
 class ApplicationFormInputs extends React.Component {
   constructor(props) {
@@ -93,6 +97,45 @@ class ApplicationFormInputs extends React.Component {
     this.removeMessageSaved = this.removeMessageSaved.bind(this)
 
     }
+
+
+  validateFirst1(Firstname1){
+
+     var re = /[^0-9]/
+    return re.test(Firstname1)
+  }
+    
+
+
+
+
+    formValid(){
+    const formRules = this.state.applicationFormRules
+
+    if((this.state.formData.contact_firstname.length > 2) && (this.validateFirst1(this.state.formData.contact_firstname))){
+      formRules[0].valid = true
+    }
+    else
+    {
+      formRules[0].valid = false
+    }
+
+    this.setState({applicationFormRules: formRules})
+    if (this.allTrue()){
+      this.setState({valid:true})
+    }else{
+      this.setState({valid:false})
+    }
+  }
+
+   allTrue(){
+    let formRules = applicationFormRules
+    for (const rule of formRules){
+      if(!rule.valid) return false
+    }
+    return true
+  }
+
 
     componentDidMount(){    
       this.getCertificationDetails(this.props.certificate)
@@ -299,7 +342,7 @@ class ApplicationFormInputs extends React.Component {
     const obj =this.state.formData
     obj[event.target.id] = event.target.value
     this.setState(obj)
-    
+     this.formValid()
   }
 
   getSelectValue_contact_homecountry(value){    
@@ -499,6 +542,7 @@ class ApplicationFormInputs extends React.Component {
 
 
   render() {
+          let formRules = this.state.applicationFormRules
 
     if (this.state.formData.status==='submitted'){
           return <Container>
@@ -539,8 +583,8 @@ class ApplicationFormInputs extends React.Component {
         }
 
           <Stepper icon>
-            <Step icon="address-book" stepName="Contact Information" onClick={this.swapFormActive(1)(1)}></Step>
-            <Step icon="graduation-cap" stepName="Education" onClick={this.swapFormActive(1)(2)}></Step>
+            <Step icon="address-book" stepName="Contact Information" onClick={this.swapFormActive(1)(1)} ></Step>
+            <Step icon="graduation-cap" stepName="Education" onClick={this.swapFormActive(1)(2)} ></Step>
             <Step icon="globe" stepName="General Experience" onClick={this.swapFormActive(1)(3)}></Step>
             <Step icon="gears" stepName="Requirements" onClick={this.swapFormActive(1)(4)}></Step>
             <Step icon="legal" stepName="Terms & Conditions" onClick={this.swapFormActive(1)(5)}></Step>
@@ -567,7 +611,11 @@ class ApplicationFormInputs extends React.Component {
                   validate
                   required
                   onChange={this.handleFormChange} />
+
+                  
+
                   </div>
+                  
 
                 <div className='form-group'>
                   <Input 
@@ -655,8 +703,8 @@ class ApplicationFormInputs extends React.Component {
                    
 
                 
-                <Button color="mdb-color" rounded className="float-right" onClick={this.handleNextPrevClick(1)(2)}>next</Button>
-                <Button color="success" rounded className="float-right" onClick={this.handleApplicationFormSave}>Save</Button>
+                <Button color="mdb-color" rounded className="float-right" onClick={this.handleNextPrevClick(1)(2)} type="submit" >next</Button>
+                <Button color="success" rounded className="float-right" onClick={this.handleApplicationFormSave} type="submit" >Save</Button>
               </Col>)}
 
               { this.state.formActivePanel1 == 2  &&

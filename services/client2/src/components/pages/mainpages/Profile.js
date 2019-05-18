@@ -158,6 +158,7 @@ class PV2 extends React.Component {
         Authorization: `Bearer ${window.localStorage.authToken}`
       }
     }
+    
     return axios(options)
     .then((res)=>{
       /*console.log(res.data)*/

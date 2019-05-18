@@ -45,8 +45,10 @@ class DashBoard extends React.Component {
 				Authorization: `Bearer ${window.localStorage.authToken}`
 			}
 		}
+		//console.log(options)
 		return axios(options)
 		.then((res)=>{
+			console.log(res.data.applications)
 			this.setState({
 				firstname: res.data.data.firstname,
 				lastname: res.data.data.lastname,
@@ -56,6 +58,7 @@ class DashBoard extends React.Component {
 				applications: res.data.applications,
 
 			})
+			// console.log(res)
 		})
 		.catch((error)=>{console.log(error)})
 	}

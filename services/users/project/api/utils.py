@@ -31,7 +31,6 @@ def authenticate(f):
 	def decorated_function(*args, **kwargs):
 
 		
-
 		response_object = {
 						'status': 'Failed',
 						'message': 'Invalid details'

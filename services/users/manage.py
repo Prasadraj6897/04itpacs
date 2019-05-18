@@ -57,6 +57,7 @@ def seeddb():
 
 	db.session.add(User(firstname='Ashwini', lastname='Rao', email='ashwini.rao@ikompass.com', password='rakesh22'))
 	db.session.add(User(firstname='Deepak', lastname='G.S', email='aditya@ikompass.com', password='rakesh22'))
+	db.session.add(User(firstname='Prasad', lastname='RRR', email='prasad@sugiinfotech.com', password='12345678'))
 
 	
 

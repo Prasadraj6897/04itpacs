@@ -113,6 +113,7 @@ services:
   environment:
    - NODE_ENV=development
    - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+   - REACT_APP_COURSES_SERVICE_URL=${REACT_APP_COURSES_SERVICE_URL}
    - REACT_APP_S3_BUCKET=${S3_BUCKET}
    - REACT_APP_S3_ACCESS_KEY=${S3_KEY}
    - REACT_APP_S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
@@ -141,12 +142,70 @@ services:
  courses:
   container_name: courses
   build:
-   context: ./services/courses
-   dockerfile: Dockerfile-dev
+    context: ./services/courses
+    dockerfile: Dockerfile-dev
   ports:
    - 5002:5000
+  command: gunicorn -b 0.0.0.0:5000 manage:app
   volumes:
-    - './services/courses:/usr/src/app'
+   - './services/courses:/usr/src/app'
+  links:
+   - courses-db
+   - mongodb
+   - redis
   environment:
    - FLASK_ENV=development
    - APP_SETTINGS=project.config.DevelopmentConfig
+   - DATABASE_URL=postgres://postgres:postgres@courses-db:5432/course_dev
+   - DATABASE_TEST_URL=postgres://postgres:postgres@courses-db:5432/course_test
+   - SECRET_KEY=ITPACS2018
+   - CELERY_BROKER=redis://redis:6379/0
+   - CELERY_BACKEND=redis://redis:6379/0
+   - C_FORCE_ROOT=true
+   - S3_KEY=${S3_KEY}
+   - S3_BUCKET=${S3_BUCKET}
+   - S3_SECRET=${S3_SECRET_ACCESS_KEY}
+   - S3_COURSE_UPLOAD_DIRECTORY=${S3_COURSE_UPLOAD_DIRECTORY}
+   - S3_COURSE_FILE_UPLOAD_DIRECTORY=${S3_COURSE_FILE_UPLOAD_DIRECTORY}
+
+ courses-db:
+  container_name: courses-db
+  build:
+   context: ./services/courses/project/db
+   dockerfile: Dockerfile
+  ports:
+   - 5436:5432
+  environment:
+   - POSTGRES_USER=postgres
+   - POSTGRES_PASSWORD=postgres
+
+ celerycourse:
+  container_name: celerycourse
+  build:
+   context: ./services/courses
+   dockerfile: Dockerfile-dev
+  command: celery -A project.tasks.celery worker --loglevel=debug 
+  environment:
+   - FLASK_DEBUG=1
+   - APP_SETTINGS=project.config.DevelopmentConfig
+   - DATABASE_URL=postgres://postgres:postgres@users-db:5432/users_dev
+   - DATABASE_TEST_URL=postgres://postgres:postgres@users-db:5432/users_test
+   - SECRET_KEY=ITPACS2018
+   - MAIL_USERNAME=contact@itpacs.org
+   - MAIL_PASSWORD=Inurtura123
+   - DB_MONGO_URL=mongodb://mongodb:27017/itpacs01
+   - CELERY_BROKER=redis://redis:6379/0
+   - CELERY_BACKEND=redis://redis:6379/0
+   - C_FORCE_ROOT = true 
+   - CELERY_IMPORTS=tasks
+   - MONGODB_USERNAME=admin
+   - MONGODB_PASSWORD=Inurtura123
+   - S3_KEY =${S3_KEY}
+   - S3_SECRET =${S3_SECRET}
+   - S3_BUCKET =${S3_BUCKET}
+   - S3_COURSE_UPLOAD_DIRECTORY =${S3_COURSE_UPLOAD_DIRECTORY}
+  depends_on:
+   - redis
+   - mongodb
+   - courses  
+   - courses-db 

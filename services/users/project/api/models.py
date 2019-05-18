@@ -142,6 +142,7 @@ class User(db.Model):
 	@staticmethod
 	def decode_auth_token(auth_token):
 		
+		# return auth_token
 		try:
 			payload = jwt.decode(auth_token, current_app.config.get('SECRET_KEY'))
 			return payload['sub']

@@ -20,6 +20,10 @@ import TrainingProvider from './pages/mainpages/TrainingProvider'
 import Examfees from './pages/mainpages/Examfees.js'
 import Profile from './pages/mainpages/Profile'
 import Courses from './pages/coursepages/Courses'
+import Allcourses from './pages/coursepages/Allcourse'
+
+import NewCourse from './forms/newcourse.js'
+import MyCourse from './forms/mycourse.js'
 
 class Routes extends React.Component {
 
@@ -89,6 +93,28 @@ class Routes extends React.Component {
                     isAuthenticated={this.props.isAuthenticated}/>
                   )} />
 
+
+            <Route exact path ='/newcourse' render={()=>(
+                  <NewCourse
+                    domain = {'all'}                    
+                    user={this.props.user}
+                    isAuthenticated={this.props.isAuthenticated}/>
+                  )} />
+
+            <Route exact path ='/mycourse' render={()=>(
+              <Courses
+                domain = {'all'}                    
+                user={this.props.user}
+                isAuthenticated={this.props.isAuthenticated}/>
+              )} />
+             <Route exact path ='/allcourse' render={()=>(
+              <Allcourses
+                domain = {'all'}                    
+                user={this.props.user}
+                isAuthenticated={this.props.isAuthenticated}/>
+              )} />
+
+
         {
             domainsListForUrl.map((domain, index)=>{
                     
@@ -99,9 +125,8 @@ class Routes extends React.Component {
                               isAuthenticated={this.props.isAuthenticated}/>
                             )} key={index}/>)
                   })
-                
-
         }
+
 
         <Route exact path='/profile' render={() => (
           <Profile

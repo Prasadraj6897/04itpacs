@@ -474,7 +474,7 @@ def get_user_status(resp):
 
 	response_object = {
 						'status': 'Success',
-						'message': 'Success',
+						'message': 'Success alert',
 						'data': user.to_json(),
 						'applications': apps_dict
 					}

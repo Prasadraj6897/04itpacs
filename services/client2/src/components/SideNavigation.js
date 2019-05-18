@@ -48,9 +48,21 @@ class SideNavigation extends React.Component {
                 {this.rSNL("/apply/artificialintelligence", "Artificial Intelligence")}
               </SideNavCat>
 
+             
+              <SideNavCat
+                name="Courses"
+                id="dashboard-cat"
+                icon="book"
+
+              >
+
+                {this.rSNL("/newcourse", "New Course")}
+                {this.rSNL("/mycourse", "My Courses")}
+                
+
+              </SideNavCat>
               
 
-              <li><Link to="/Courses" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="book" className="mr-2 red-text" /> Courses</Link></li>
               <li><Link to="/takeexam" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="balance-scale" className="mr-2 pink-text" /> Exams</Link></li>              
               <li><Link to="/becometrainingprovider" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="group" className="mr-2 cyan-text" />Training Provider</Link></li>
               <li><Link to="/contactus" className="collapsible-header" onClick={onLinkClick}><MDBIcon icon="envelope-o" className="mr-2 red-text" /> Contact us</Link></li>

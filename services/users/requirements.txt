@@ -17,4 +17,3 @@ rq
 Flask-Mail
 celery
 boto
-

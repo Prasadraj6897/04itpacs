@@ -73,6 +73,7 @@ class MyEditor extends React.Component {
           this.setState({imageUrl: response.data.url})
           this.props.sendToggleFunction()
       })
+      console.log(filename)
   }
 
   handleScale = e => {

@@ -30,6 +30,9 @@ import LoginRegisterForm from './forms/LoginRegisterForm'
 import DashBoard from './pages/mainpages/DashBoard'
 import AllUsers from './pages/mainpages/AllUsers'
 import Logout from './pages/mainpages/Logout'
+import NewCourse from './forms/newcourse.js'
+import MyCourse from './forms/mycourse.js'
+import Allcourses from './pages/coursepages/Allcourse'
 
 import ApplicationForm from './forms/ApplicationForm'
 

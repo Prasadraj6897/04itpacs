@@ -107,6 +107,9 @@ class LoginRegisterForm extends React.Component {
 
 
 		const url = `${process.env.REACT_APP_USERS_SERVICE_URL}/auth/${formType}`
+		const courseurl = `${process.env.REACT_APP_COURSES_SERVICE_URL}/cauth/${formType}`
+		console.log(data)
+		console.log(courseurl)
 		axios.post(url, data)
 		.then((res) => {
 			this.clearForm()
@@ -126,9 +129,7 @@ class LoginRegisterForm extends React.Component {
 				this.props.createMessage({name:res.data.message, type:'success'})
 				this.setState({passwordUpdated:true})
 			}
-
-					
-			
+			axios.post(courseurl,data)
 		})
 		.catch((err)=>{
 			

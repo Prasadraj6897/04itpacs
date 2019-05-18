@@ -29,9 +29,11 @@
     "react-avatar-edit": "^0.7.1",
     "react-avatar-editor": "^11.0.6",
     "react-bootstrap": "^0.32.1",
+    "react-dnd": "^7.4.5",
     "react-dom": "^16.7.0",
     "react-dropzone": "^9.0.0",
     "react-error-overlay": "^4.0.0",
+    "react-md": "^1.11.0",
     "react-native-base64": "0.0.2",
     "react-native-fetch-blob": "^0.10.8",
     "react-native-fs": "^2.13.3",
@@ -43,7 +45,9 @@
     "react-scripts": "1.1.4",
     "react-scrollspy": "^3.3.5",
     "react-svg": "^2.2.18",
-    "react-webcam": "^1.1.1"
+    "react-tag-input": "^6.4.0",
+    "react-webcam": "^1.1.1",
+    "semantic-ui-react": "^0.87.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

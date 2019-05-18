@@ -6,6 +6,18 @@ export const qualifications = [
             'Doctorate'
 ]
 
+export const level = [
+            'School',
+            'College',
+            'University',
+            'Professional',
+            'Others'
+]
+export const type = [
+            'Official',
+            'Tution/ Training'
+]
+
 const range = (start, stop, step = 1) =>
   Array(Math.ceil((stop - start) / step))
     .fill(start)
