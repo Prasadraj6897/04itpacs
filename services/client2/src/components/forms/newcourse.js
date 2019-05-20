@@ -57,6 +57,7 @@ class NewCourse extends React.Component {
   			isActive1: "active",
   			isActive2: "disabled",
   			isActive3: "disabled",
+  			departments:[],
       		courselevel: [
 				{
 					value: "School",
@@ -87,8 +88,8 @@ class NewCourse extends React.Component {
 					text: "Official"
 				},
 				{
-					value: "Tution/ Training",
-					text: "Tution/ Training"
+					value: "Tuition/ Training",
+					text: "Tuition/ Training"
 				}
 			],
 			studentgroup: [
@@ -99,6 +100,22 @@ class NewCourse extends React.Component {
 				{
 					value: "Standard 1, Standard 2,...",
 					text: "Standard 1, Standard 2,..."
+				},
+				{
+					value: "Form 1, Form 2,...",
+					text: "Form 1, Form 2,..."
+				},
+				{
+					value: "class 1, class 2,...",
+					text: "class 1, class 2,..."
+				},
+				{
+					value: "Batch 1, Batch 2,...",
+					text: "Batch 1, Batch 2,..."
+				},
+				{
+					value: "year 1, year 2,...",
+					text: "year 1, year 2,..."
 				}
 			],
 			coursestream: [
@@ -117,6 +134,18 @@ class NewCourse extends React.Component {
 				{
 					value: "English",
 					text: "English"
+				},
+				{
+					value: "Maths",
+					text: "Maths"
+				},
+				{
+					value: "History",
+					text: "History"
+				},
+				{
+					value: "Music",
+					text: "Music"
 				}
 			],
 			agefrom: [
@@ -435,6 +464,32 @@ handleNextPrevClick = (a) => (param) => (e) => {
     return true;   // for disable button return true otherwise false
   }
 
+   submitHandler = event => {
+    event.preventDefault();
+    event.target.className += " was-validated";
+  }
+
+addnewdepartment(){
+	this.setState({
+		departments:[...this.state.departments,""]
+	});
+  }
+handlechange(e,index){
+	console.log(index)
+	this.state.departments[index]=e.target.value
+	this.setState({
+		departments:this.state.departments
+	})
+}
+handleremove(index){
+	console.log(index)
+	this.state.departments.splice(index,1)
+	this.setState({
+		departments:this.state.departments
+
+	})
+}
+
 render(){
 	 
 		return(
@@ -450,7 +505,7 @@ render(){
 											<MDBStep icon="globe" stepName="Resources" id = "2" className={this.state.isActive2} onClick={this.swapFormActive(1)(2)}></MDBStep>
 											<MDBStep icon="photo" stepName="Payment" id = "3" className={this.state.isActive3} onClick={this.swapFormActive(1)(3)}></MDBStep>
 							        	</MDBStepper>	
-											<form>
+											<form className="needs-validation" onSubmit={this.submitHandler} noValidate>
 				              					 {this.state.formActivePanel1 == 1  &&
 				              					 	(<Col md="12">
 				              					 		<MDBRow>
@@ -461,7 +516,7 @@ render(){
 					              					 		</MDBCol>
 
 					              					 		<MDBCol md="11" sm="3">
-					              					 			<MDBInput type="text" label="coursetitle" required getValue={this.state.formData.coursetitle} onChange={e => this.handleFormChange} outline />
+					              					 			<MDBInput type="text" className="form-control" label="coursetitle" required getValue={this.state.formData.coursetitle} onChange={e => this.handleFormChange} outline />
 					              					 		</MDBCol>
 
 				              					 			<MDBCol md="1">
@@ -673,7 +728,7 @@ render(){
 																			<MDBCol col-md="11">
 																				<div>
 																					<MDBInput
-																						type="textarea"
+																						type="text"
 																						label="Enter Your Department"
 																						rows="1"
 																						outline 
@@ -681,6 +736,32 @@ render(){
 																				</div>
 																			</MDBCol>
 																	</MDBRow>
+																	<MDBRow>
+																		<MDBCol md="1" sm="1">
+								              					 		</MDBCol>
+								              					 		<MDBCol col-md="11">
+								              					 			
+																				<div>
+																			        {
+																						this.state.departments.map((department, index)=>{
+																							return(
+																								<div key={index}>
+																									<span>
+																										<MDBInput type="text" rounded value={department} onChange={(e)=>this.handlechange(e,index)} outline label="Enter Your Department"></MDBInput>
+																			
+																										<MDBIcon icon="trash" onClick={()=>this.handleremove(index)}></MDBIcon>
+																									</span>
+																								</div>
+
+																							)
+																						})
+
+																			        }
+																		        </div>
+																	        
+													        			<MDBBtn color="warning" rounded onClick={(e)=>this.addnewdepartment(e)}>ADD  Department</MDBBtn>
+													        			</MDBCol>
+													        		</MDBRow>
 																</MDBContainer>
 									          	        	}
 									          	        	{this.state.levelitems=='Professional' &&
@@ -798,7 +879,7 @@ render(){
 															</div>
 															</MDBCol>
 															<MDBCol md="5">
-																 <MuiThemeProvider>
+															  <MuiThemeProvider>
 											                    <DatePicker 
 											                      style={{borderBottom: '1px solid #bdbdbd', height: '3rem'}} 
 											                      id="startdate" textFieldStyle={{width: '100%'}} 
@@ -809,7 +890,7 @@ render(){
 											                  </MuiThemeProvider>
 															</MDBCol>
 															<MDBCol md="5">
-																 <MuiThemeProvider>
+															  <MuiThemeProvider>
 											                    <DatePicker 
 											                      style={{borderBottom: '1px solid #bdbdbd', height: '3rem'}} 
 											                      id="startdate" textFieldStyle={{width: '100%'}} 
@@ -847,6 +928,7 @@ render(){
 													        </MDBCol>
 												        </MDBRow>
 													        <br/>
+													       	
 												        <div>
 									                    	<MDBBtn color="cyan" type="primary" onClick={this.addnewcourses}>ADD</MDBBtn>
 									                    	<MDBBtn color="secondary" rounded className="float-right" onClick={this.handleNextPrevClick (1)(2)}  type="submit" >next</MDBBtn>
